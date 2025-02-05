@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title: BrainSaver
+## Notes: Save and name brainwasher specs
+## Author: Weird Vibes
+## Version: 1.0
+# OptionalDeps: UnitXP_SP3_Addon
+## SavedVariablesPerCharacter: BrainSaverDB
+
+BrainSaver.lua
