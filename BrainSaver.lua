@@ -75,6 +75,13 @@ local function ColorSpecSummary(t1,t2,t3)
       getColor(t3), t3)
 end
 
+local function TalentCounts()
+  local _,_,t1 = GetTalentTabInfo(1)
+  local _,_,t2 = GetTalentTabInfo(2)
+  local _,_,t3 = GetTalentTabInfo(3)
+  return t1,t2,t3
+end
+
 ----------------------------------------------------------------
 -- Searches the spellbook for a spell matching the given name.
 -- Returns the texture path if found, or nil otherwise.
@@ -325,12 +332,15 @@ StaticPopupDialogs["ENABLE_TALENT_LAYOUT"] = {
       this:SetBackdropColor(1,1,1,1)
       -- getglobal(this:GetName().."Background"):SetVertexColor(0,0,0,1)
       local button = talentButtons[mainFrame.currentButton]
+      local spec = BrainSaverDB.spec[button.index]
+      local t1,t2,t3 = TalentCounts()
       getglobal(this:GetName().."Text"):SetText(
-        format("Enable these talents from slot %d?\n\n%s\n\n%s",
+        format("Current talents: %s\n\nSpec Slot %d:\nSpec name: %s\nSpec talents: %s\n\nEnable this spec's talents?",
+        -- format("Enable these talents from slot %d?\n\n%s\n\n%s",
+                ColorSpecSummary(t1, t2, t3),
                 button.index,
-                ColorSpecSummary(BrainSaverDB.spec[button.index].t1,
-                  BrainSaverDB.spec[button.index].t2,
-                  BrainSaverDB.spec[button.index].t3),
+                button:GetName(),
+                ColorSpecSummary(spec.t1, spec.t2, spec.t3),
                 button.layoutName:GetText())
       )
     end,
@@ -393,23 +403,21 @@ StaticPopupDialogs["SAVE_TALENT_LAYOUT"] = {
     OnShow = function()
       mainFrame:SetAlpha(dialogue_alpha)
       local button = talentButtons[mainFrame.currentButton]
-      local _,_,t1 = GetTalentTabInfo(1)
-      local _,_,t2 = GetTalentTabInfo(2)
-      local _,_,t3 = GetTalentTabInfo(3)
+      local spec = BrainSaverDB.spec[mainFrame.currentButton]
+      local t1,t2,t3 = TalentCounts()
+
       getglobal(this:GetName().."Text"):SetText(
-        format("Save your current talents to slot %d?\n\nCurrent points: %s\n\nCurrent name: %s\n\nEnter new name:",
-                button.index,
+        format("Current talents: %s\n\nSpec Slot %d:\nSpec name: %s\nSpec talents: %s\n\nOverwrite spec talents with current talents?",
                 ColorSpecSummary(t1,t2,t3),
-                button.layoutName:GetText())
+                button.index,
+                button.layoutName:GetText(),
+                spec and ColorSpecSummary(spec.t1,spec.t2,spec.t3) or "? | ? | ?")
       )
     end,
     OnAccept = function()
       local button = talentButtons[mainFrame.currentButton]
       local newName = getglobal(this:GetParent():GetName().."EditBox"):GetText()
-
-      local _,_,t1 = GetTalentTabInfo(1)
-      local _,_,t2 = GetTalentTabInfo(2)
-      local _,_,t3 = GetTalentTabInfo(3)
+      local t1,t2,t3 = TalentCounts()
 
       BrainSaverDB.spec[button.index] = {
         name = newName,
@@ -483,9 +491,7 @@ mainFrame:SetScript("OnEvent", function()
   elseif event == "GOSSIP_SHOW" and (GossipFrameNpcNameText:GetText() == "Goblin Brainwashing Device") then
 
     local titleButton;
-    local _,_,t1 = GetTalentTabInfo(1)
-    local _,_,t2 = GetTalentTabInfo(2)
-    local _,_,t3 = GetTalentTabInfo(3)
+    local t1,t2,t3 = TalentCounts()
 
     talentSummaryText:SetText("Current talents: " .. ColorSpecSummary(t1,t2,t3))
 
