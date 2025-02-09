@@ -236,11 +236,6 @@ for row = 1, numRows do
               if BrainSaverDB.spec[button.index] then
                 -- print("has spec")
                 StaticPopup_Show("ENABLE_TALENT_LAYOUT")
-                -- local enable_talent = StaticPopup_Show("ENABLE_TALENT_LAYOUT", format("Active these talents from slot %d?\n%s\n%s",
-                -- this.index,
-                -- this.layoutName:GetText(),
-                -- ColorSpecSummary(BrainSaverDB.spec[button.index].t1,BrainSaverDB.spec[button.index].t2,BrainSaverDB.spec[button.index].t3)))
-                -- StaticPopup_Show("ENABLE_TALENT_LAYOUT", this.index, this.layoutName:GetText(), "1 | 2 | 3")
               end
             end
           else
