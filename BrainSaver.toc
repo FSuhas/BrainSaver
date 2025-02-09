@@ -1,5 +1,5 @@
 ## Interface: 11200
-## Title: BrainSaver
+## Title: Brain Saver
 ## Notes: Save and name brainwasher specs
 ## Author: Weird Vibes
 ## Version: 1.0
