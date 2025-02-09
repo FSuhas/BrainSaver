@@ -480,7 +480,7 @@ mainFrame:SetScript("OnEvent", function()
         end
       end
     end
-  elseif event == "GOSSIP_SHOW" and (GossipFrameNpcNameText:GetText() == "Orgrimmar Grunt" or (GossipFrameNpcNameText:GetText() == "Goblin Brainwashing Device")) then
+  elseif event == "GOSSIP_SHOW" and (GossipFrameNpcNameText:GetText() == "Goblin Brainwashing Device") then
 
     local titleButton;
     local _,_,t1 = GetTalentTabInfo(1)
