@@ -40,18 +40,18 @@ mainFrame.currentButton = 1
 --------------------------------------------------
 -- Title and Talent Summary
 --------------------------------------------------
-local titleText = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-titleText:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 15, -15)
-titleText:SetText(GetAddOnMetadata(addon_name, "title") .. " " .. GetAddOnMetadata(addon_name, "version"))
+mainFrame.titleText = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+mainFrame.titleText:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 15, -15)
+mainFrame.titleText:SetText(GetAddOnMetadata(addon_name, "title") .. " " .. GetAddOnMetadata(addon_name, "version"))
 
-local talentSummaryText = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-talentSummaryText:SetPoint("TOP", mainFrame, "TOP", 0, -50)
-talentSummaryText:SetText("12/31/9")  -- Update this with real talent info as needed
+mainFrame.talentSummaryText = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+mainFrame.talentSummaryText:SetPoint("TOP", mainFrame, "TOP", 0, -50)
+mainFrame.talentSummaryText:SetText("12/31/9")  -- Update this with real talent info as needed
 
 -- Standard close button.
-local closeButton = CreateFrame("Button", nil, mainFrame, "UIPanelCloseButton")
-closeButton:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -5, -5)
-closeButton:SetScript("OnClick", function()
+mainFrame.closeButton = CreateFrame("Button", nil, mainFrame, "UIPanelCloseButton")
+mainFrame.closeButton:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -5, -5)
+mainFrame.closeButton:SetScript("OnClick", function()
   HideUIPanel(GossipFrame) -- use the specific closing function
 end)
 
@@ -316,34 +316,34 @@ end
 --------------------------------------------------
 -- Reset Talents Button (Anchored below the grid)
 --------------------------------------------------
-local resetButton = CreateFrame("Button", "ResetTalentButton", mainFrame, "UIPanelButtonTemplate")
-resetButton:SetWidth(120)
-resetButton:SetHeight(30)
+mainFrame.resetButton = CreateFrame("Button", "ResetTalentButton", mainFrame, "UIPanelButtonTemplate")
+mainFrame.resetButton:SetWidth(120)
+mainFrame.resetButton:SetHeight(30)
 -- Anchor the reset button below the grid.
-resetButton:SetPoint("BOTTOM", mainFrame, "BOTTOM", 0, 20)
-resetButton:SetText("Reset Talents")
-resetButton:SetScript("OnClick", function()
+mainFrame.resetButton:SetPoint("BOTTOM", mainFrame, "BOTTOM", 0, 20)
+mainFrame.resetButton:SetText("Reset Talents")
+mainFrame.resetButton:SetScript("OnClick", function()
     StaticPopup_Show("RESET_TALENTS")
 end)
 
 --------------------------------------------------
 -- Show Brainwasher Dialogue button
 --------------------------------------------------
-local washerButton = CreateFrame("Button", "WasherDialogueButton", mainFrame, "UIPanelButtonTemplate")
-washerButton:SetWidth(60)
-washerButton:SetHeight(20)
+mainFrame.washerButton = CreateFrame("Button", "WasherDialogueButton", mainFrame, "UIPanelButtonTemplate")
+mainFrame.washerButton:SetWidth(60)
+mainFrame.washerButton:SetHeight(20)
 -- Anchor the reset button below the grid.
-washerButton:SetPoint("BOTTOMRIGHT", mainFrame, "BOTTOMRIGHT", -15, 15)
-washerButton:SetText("Washer")
-washerButton:SetScript("OnClick", function()
+mainFrame.washerButton:SetPoint("BOTTOMRIGHT", mainFrame, "BOTTOMRIGHT", -15, 15)
+mainFrame.washerButton:SetText("Washer")
+mainFrame.washerButton:SetScript("OnClick", function()
   GossipFrame:SetAlpha(1)
 end)
-washerButton:SetScript("OnEnter", function()
+mainFrame.washerButton:SetScript("OnEnter", function()
   GameTooltip:SetOwner(this, "ANCHOR_LEFT")
   GameTooltip:SetText("Show original brainwasher dialogue.", 1, 1, 0)  -- Tooltip title
   GameTooltip:Show()
 end)
-washerButton:SetScript("OnLeave", function()
+mainFrame.washerButton:SetScript("OnLeave", function()
   GameTooltip:Hide()
 end)
 
@@ -569,7 +569,7 @@ mainFrame:SetScript("OnEvent", function()
     local t1,t2,t3 = TalentCounts()
     local current_spec = FetchTalents()
 
-    talentSummaryText:SetText("Current talents: " .. ColorSpecSummary(t1,t2,t3))
+    mainFrame.talentSummaryText:SetText("Current talents: " .. ColorSpecSummary(t1,t2,t3))
 
     mainFrame.gossip_slots = {
       save = {},
@@ -632,6 +632,23 @@ mainFrame:SetScript("OnEvent", function()
           end
         end
       end
+    end
+
+
+    -- if no gossip options occur we can't use the washer
+    if not mainFrame.gossip_slots.reset then
+      mainFrame.talentSummaryText:SetText("\n\n\n\nBrainwasher not available on this character.")
+      for _,btn in talentButtons do
+        btn:Hide()
+      end
+      mainFrame.resetButton:Hide()
+      mainFrame.washerButton:Hide()
+    else
+      for _,btn in talentButtons do
+        btn:Show()
+      end
+      mainFrame.resetButton:Show()
+      mainFrame.washerButton:Show()
     end
 
     GossipFrame:SetAlpha(0) -- 'hide' but don't cause a GOSSIP_CLOSED
