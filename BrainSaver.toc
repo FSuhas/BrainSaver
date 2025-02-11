@@ -2,7 +2,7 @@
 ## Title: Brain Saver
 ## Notes: Save and name brainwasher specs
 ## Author: Weird Vibes
-## Version: 1.1.0
+## Version: 1.1.2
 # OptionalDeps: UnitXP_SP3_Addon
 ## SavedVariablesPerCharacter: BrainSaverDB
 
