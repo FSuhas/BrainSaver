@@ -364,9 +364,8 @@ StaticPopupDialogs["BUY_TALENT_SLOT"] = {
       local buy_button
       local slot
       for s,btn in mainFrame.gossip_slots.buy do
-        -- todo: reload main frame on buy or does washer close itself on buy?
         -- Send the appropriate gossip option:
-        btn:Click()
+        btn:Click() -- this will close the dialogue for us
         break
       end
     end,
@@ -392,7 +391,7 @@ StaticPopupDialogs["ENABLE_TALENT_LAYOUT"] = {
       local spec = BrainSaverDB.spec[button.index]
       local t1,t2,t3 = TalentCounts()
       getglobal(this:GetName().."Text"):SetText(
-        format("LOAD TALENTS\n\nSpec Slot %d:\nSpec name: %s\nSpec talents: %s\n\nCurrent talents: %s\nActivate spec talents? (causes brainwasher debuff)",
+        format("|cffff5500LOAD|r TALENTS\n\nSpec Slot %d:\nSpec name: %s\nSpec talents: %s\n\nCurrent talents: %s\nActivate spec talents? (causes brainwasher debuff)",
         -- format("Enable these talents from slot %d?\n\n%s\n\n%s",
                 button.index,
                 button:GetName(),
@@ -468,7 +467,7 @@ StaticPopupDialogs["SAVE_TALENT_LAYOUT"] = {
       local t1,t2,t3 = TalentCounts()
 
       getglobal(this:GetName().."Text"):SetText(
-        format("SAVE TALENTS\n\nSpec Slot %d:\nSpec name: %s\nSpec talents: %s\n\nCurrent talents: %s\nReplace spec talents with current talents?",
+        format("|cff00ff55SAVE|r TALENTS\n\nSpec Slot %d:\nSpec name: %s\nSpec talents: %s\n\nCurrent talents: %s\nReplace spec talents with current talents?",
                 button.index,
                 button.layoutName:GetText(),
                 spec and ColorSpecSummary(spec.t1,spec.t2,spec.t3) or "? | ? | ?",
@@ -591,6 +590,7 @@ mainFrame:SetScript("OnEvent", function()
         save_spec = tonumber(save_spec)
         load_spec = tonumber(load_spec)
         buy_spec  = tonumber(buy_spec)
+
         
         if save_spec then
           mainFrame.gossip_slots.save[save_spec] = titleButton
@@ -618,11 +618,13 @@ mainFrame:SetScript("OnEvent", function()
       end
     end
 
-    for s_ix,spec in ipairs(BrainSaverDB.spec) do
-      local button = talentButtons[s_ix]
+    -- for s_ix,spec in ipairs(BrainSaverDB.spec) do
+    for i=1,4 do
+      local button = talentButtons[i]
+      local spec = BrainSaverDB.spec[i]
       button.isCurrentSpec = false
       if button.isActive then
-        if button.canLoad then
+        if button.canLoad and spec then
           -- load spec data
           button:SetIcon(spec.icon)
           button:SetName(spec.name)
@@ -630,6 +632,10 @@ mainFrame:SetScript("OnEvent", function()
           if spec.talents and IsSameSpec(spec.talents,current_spec) then
             button.isCurrentSpec = true
           end
+        elseif button.canSave then -- if save but no load
+          button:SetIcon("Interface\\Icons\\INV_Misc_QuestionMark")
+          button:SetName("Spec "..button.index)
+          button:SetTalentSummary("? | ? | ?")
         end
       end
     end
