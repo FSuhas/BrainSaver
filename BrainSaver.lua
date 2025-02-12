@@ -1,5 +1,7 @@
+local _G = _G or getfenv(0)
+
 local addon_name = "BrainSaver"
-local dialogue_alpha = 0.35
+local dialog_alpha = 0.35
 
 --------------------------------------------------
 -- Main Frame Setup
@@ -300,7 +302,7 @@ for row = 1, numRows do
         btn:SetScript("OnShow", function ()
           if this.isCurrentSpec then
             -- this:GetNormalTexture():SetVertexColor(0.7, 1, 0.7)
-            this.activeIndicator:SetText("ACTIVE")
+            this.activeIndicator:SetText("|cff00ff00ACTIVE|r")
           else
             -- this:GetNormalTexture():SetVertexColor(1, 1, 1)
             this.activeIndicator:SetText("")
@@ -356,7 +358,7 @@ StaticPopupDialogs["BUY_TALENT_SLOT"] = {
     button1 = "Yes",
     button2 = "No",
     OnShow = function()
-      mainFrame:SetAlpha(dialogue_alpha)
+      mainFrame:SetAlpha(dialog_alpha)
     end,
     OnAccept = function()
       -- local button = this.data
@@ -384,13 +386,13 @@ StaticPopupDialogs["ENABLE_TALENT_LAYOUT"] = {
     button2 = "Cancel",
     showAlert = 1,
     OnShow = function()
-      mainFrame:SetAlpha(dialogue_alpha)
+      mainFrame:SetAlpha(dialog_alpha)
       this:SetBackdropColor(1,1,1,1)
-      -- getglobal(this:GetName().."Background"):SetVertexColor(0,0,0,1)
+
       local button = talentButtons[mainFrame.currentButton]
       local spec = BrainSaverDB.spec[button.index]
       local t1,t2,t3 = TalentCounts()
-      getglobal(this:GetName().."Text"):SetText(
+      _G[this:GetName().."Text"]:SetText(
         format("|cffff5500LOAD|r TALENTS\n\nSpec Slot %d:\nSpec name: %s\nSpec talents: %s\n\nCurrent talents: %s\nActivate spec talents? (causes brainwasher debuff)",
         -- format("Enable these talents from slot %d?\n\n%s\n\n%s",
                 button.index,
@@ -399,9 +401,9 @@ StaticPopupDialogs["ENABLE_TALENT_LAYOUT"] = {
                 ColorSpecSummary(t1, t2, t3))
       )
       if spec then
-        getglobal(this:GetName().."AlertIcon"):SetTexture(spec.icon)
+        _G[this:GetName().."AlertIcon"]:SetTexture(spec.icon)
       else
-        getglobal(this:GetName().."AlertIcon"):SetTexture(button:GetIcon())
+        _G[this:GetName().."AlertIcon"]:SetTexture(button:GetIcon())
       end
     end,
     OnAccept = function()
@@ -425,8 +427,8 @@ StaticPopupDialogs["EDIT_TALENT_SLOT"] = {
     hasEditBox = 1,
     hasWideEditBox = 1,
     OnShow = function()
-      mainFrame:SetAlpha(dialogue_alpha)
-      local editBox = getglobal(this:GetName().."WideEditBox")
+      mainFrame:SetAlpha(dialog_alpha)
+      local editBox = _G[this:GetName().."WideEditBox"]
       local spec = BrainSaverDB.spec[mainFrame.currentButton]
       if spec and spec.icon then
         editBox:SetText(spec.icon)
@@ -436,14 +438,14 @@ StaticPopupDialogs["EDIT_TALENT_SLOT"] = {
     end,
     OnAccept = function()
       local button = talentButtons[mainFrame.currentButton]
-      local newText = getglobal(this:GetParent():GetName().."WideEditBox"):GetText()
+      local newText = _G[this:GetParent():GetName().."WideEditBox"]:GetText()
       local icon = button:SetIcon(newText)
       if BrainSaverDB.spec[mainFrame.currentButton] then
         BrainSaverDB.spec[mainFrame.currentButton].icon = icon
       end
     end,
     OnHide = function()
-      getglobal(this:GetName().."WideEditBox"):SetText("")
+      _G[this:GetName().."WideEditBox"]:SetText("")
       mainFrame:SetAlpha(1)
     end,
     timeout = 0,
@@ -461,30 +463,30 @@ StaticPopupDialogs["SAVE_TALENT_LAYOUT"] = {
     hasEditBox = 1,
     showAlert = 1,
     OnShow = function()
-      mainFrame:SetAlpha(dialogue_alpha)
+      mainFrame:SetAlpha(dialog_alpha)
       local button = talentButtons[mainFrame.currentButton]
       local spec = BrainSaverDB.spec[mainFrame.currentButton]
       local t1,t2,t3 = TalentCounts()
 
-      getglobal(this:GetName().."Text"):SetText(
+      _G[this:GetName().."Text"]:SetText(
         format("|cff00ff55SAVE|r TALENTS\n\nSpec Slot %d:\nSpec name: %s\nSpec talents: %s\n\nCurrent talents: %s\nReplace spec talents with current talents?",
                 button.index,
                 button.layoutName:GetText(),
                 spec and ColorSpecSummary(spec.t1,spec.t2,spec.t3) or "? | ? | ?",
                 ColorSpecSummary(t1,t2,t3))
       )
-      local editBox = getglobal(this:GetName().."EditBox")
+      local editBox = _G[this:GetName().."EditBox"]
       if spec then
-        getglobal(this:GetName().."AlertIcon"):SetTexture(spec.icon)
+        _G[this:GetName().."AlertIcon"]:SetTexture(spec.icon)
         editBox:SetText(spec.name)
       else
-        getglobal(this:GetName().."AlertIcon"):SetTexture(button:GetIcon())
+        _G[this:GetName().."AlertIcon"]:SetTexture(button:GetIcon())
         editBox:SetText(button:GetName())
       end
     end,
     OnAccept = function()
       local button = talentButtons[mainFrame.currentButton]
-      local newName = getglobal(this:GetParent():GetName().."EditBox"):GetText()
+      local newName = _G[this:GetParent():GetName().."EditBox"]:GetText()
       local t1,t2,t3 = TalentCounts()
       local talents = FetchTalents()
 
@@ -504,9 +506,9 @@ StaticPopupDialogs["SAVE_TALENT_LAYOUT"] = {
       mainFrame.gossip_slots.save[mainFrame.currentButton]:Click()
     end,
     OnHide = function()
-      getglobal(this:GetName() .. "EditBox"):SetText("")
+      _G[this:GetName() .. "EditBox"]:SetText("")
       mainFrame:SetAlpha(1)
-      getglobal(this:GetName().."AlertIcon"):SetTexture()
+      _G[this:GetName().."AlertIcon"]:SetTexture()
     end,
     timeout = 0,
     whileDead = 1,
@@ -517,19 +519,19 @@ StaticPopupDialogs["SAVE_TALENT_LAYOUT"] = {
 -- can't use the builtin since this doesn't use the CONFIRM_TALENT_WIPE event
 -- and can't use CheckTalentMasterDist
 StaticPopupDialogs["RESET_TALENTS"] = {
-    text = "Reset your current talent points?\n\nThis cost gold to do and causes a 10 minute brainwasher debuff.",
+    text = "Reset your current talent points?\n\nThis costs gold and causes a 10 minute brainwasher use debuff.",
     button1 = "Yes",
     button2 = "No",
     OnShow = function()
-      mainFrame:SetAlpha(dialogue_alpha)
-      getglobal(this:GetName().."AlertIcon"):SetTexture("Interface\\Icons\\Spell_Nature_AstralRecalGroup")
+      mainFrame:SetAlpha(dialog_alpha)
+      _G[this:GetName().."AlertIcon"]:SetTexture("Interface\\Icons\\Spell_Nature_AstralRecalGroup")
     end,
     OnAccept = function()
       mainFrame.gossip_slots.reset:Click()
     end,
     OnHide = function()
       mainFrame:SetAlpha(1)
-      getglobal(this:GetName().."AlertIcon"):SetTexture()
+      _G[this:GetName().."AlertIcon"]:SetTexture()
     end,
     timeout = 0,
     whileDead = 1,
@@ -539,131 +541,136 @@ StaticPopupDialogs["RESET_TALENTS"] = {
 }
 
 --------------------------------------------------
--- Gossip Event Handling
+-- Event Handling
 --------------------------------------------------
 mainFrame:RegisterEvent("ADDON_LOADED")
 mainFrame:RegisterEvent("GOSSIP_SHOW")
 mainFrame:RegisterEvent("GOSSIP_CLOSED")
 mainFrame:RegisterEvent("UI_ERROR_MESSAGE")
 mainFrame:SetScript("OnEvent", function()
-  if event == "UI_ERROR_MESSAGE" then
-    if string.find(arg1, "^Scrambled brain detected") then
-      UIErrorsFrame:Clear()
-      for i = 0, 16 do
-        local ix = GetPlayerBuff(i, "HARMFUL")
-        if ix < 0 then break end
-        local texture = GetPlayerBuffTexture(ix)
-        if string.lower(texture) == "interface\\icons\\spell_shadow_mindrot" then
-          local timeRemaining = GetPlayerBuffTimeLeft(ix)
-          if timeRemaining then
-            UIErrorsFrame:AddMessage(format("Brainwasher Debuff: %dm %ds", timeRemaining/60,math.mod(timeRemaining,60)),1,0,0)
-          end
-          break -- stop once we've found the desired debuff
-        end
-      end
-    end
-  elseif event == "GOSSIP_SHOW" and (GossipFrameNpcNameText:GetText() == "Goblin Brainwashing Device") then
-
-    local titleButton;
-    local t1,t2,t3 = TalentCounts()
-    local current_spec = FetchTalents()
-
-    mainFrame.talentSummaryText:SetText("Current talents: " .. ColorSpecSummary(t1,t2,t3))
-
-    mainFrame.gossip_slots = {
-      save = {},
-      load = {},
-      buy = {},
-      -- reset = nil,
-    }
-
-    for i=1, NUMGOSSIPBUTTONS do
-      titleButton = getglobal("GossipTitleButton" .. i)
-
-      
-      if titleButton:IsVisible() then
-        local text = titleButton:GetText()
-        local _,_,save_spec = string.find(text,"Save (%d+)(..) Specialization")
-        local _,_,load_spec = string.find(text,"Activate (%d+)(..) Specialization")
-        local _,_,buy_spec = string.find(text,"Buy (%d+)(..) Specialization")
-        local reset = string.find(text,"Reset my talents")
-        save_spec = tonumber(save_spec)
-        load_spec = tonumber(load_spec)
-        buy_spec  = tonumber(buy_spec)
-
-        
-        if save_spec then
-          mainFrame.gossip_slots.save[save_spec] = titleButton
-          talentButtons[save_spec].canSave = true
-          talentButtons[save_spec].isActive = true
-
-        elseif load_spec then
-          mainFrame.gossip_slots.load[load_spec] = titleButton
-          talentButtons[load_spec].canLoad = true
-          talentButtons[load_spec].isActive = true
-
-        elseif buy_spec then
-          mainFrame.gossip_slots.buy[buy_spec] = titleButton
-
-          for i=buy_spec,4 do
-            talentButtons[i].isActive = false
-            talentButtons[i]:SetIcon("Interface\\Icons\\INV_Misc_Coin_01",true)
-            talentButtons[i]:SetName("")
-            talentButtons[i]:SetTalentSummary("Buy Slot")
-          end
-
-        elseif reset then
-          mainFrame.gossip_slots.reset = titleButton
-        end
-      end
-    end
-
-    -- for s_ix,spec in ipairs(BrainSaverDB.spec) do
-    for i=1,4 do
-      local button = talentButtons[i]
-      local spec = BrainSaverDB.spec[i]
-      button.isCurrentSpec = false
-      if button.isActive then
-        if button.canLoad and spec then
-          -- load spec data
-          button:SetIcon(spec.icon)
-          button:SetName(spec.name)
-          button:SetTalentSummary(spec.t1,spec.t2,spec.t3)
-          if spec.talents and IsSameSpec(spec.talents,current_spec) then
-            button.isCurrentSpec = true
-          end
-        elseif button.canSave then -- if save but no load
-          button:SetIcon("Interface\\Icons\\INV_Misc_QuestionMark")
-          button:SetName("Spec "..button.index)
-          button:SetTalentSummary("? | ? | ?")
-        end
-      end
-    end
-
-
-    -- if no gossip options occur we can't use the washer
-    if not mainFrame.gossip_slots.reset then
-      mainFrame.talentSummaryText:SetText("\n\n\n\nBrainwasher not available on this character.")
-      for _,btn in talentButtons do
-        btn:Hide()
-      end
-      mainFrame.resetButton:Hide()
-      mainFrame.washerButton:Hide()
-    else
-      for _,btn in talentButtons do
-        btn:Show()
-      end
-      mainFrame.resetButton:Show()
-      mainFrame.washerButton:Show()
-    end
-
-    GossipFrame:SetAlpha(0) -- 'hide' but don't cause a GOSSIP_CLOSED
-    mainFrame:Show()
-
-  elseif event == "GOSSIP_CLOSED" then
-    mainFrame:Hide()
-  elseif event == "ADDON_LOADED" and arg1 == "BrainSaver" then
-    BrainSaverDB = BrainSaverDB or {}
-    BrainSaverDB.spec = BrainSaverDB.spec or {}
-  end
+  this[event](this,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10)
 end)
+
+function mainFrame:UI_ERROR_MESSAGE(msg)
+  if not (string.find(msg, "^Scrambled brain detected")) then return end
+  for i = 0, 16 do
+    local ix = GetPlayerBuff(i, "HARMFUL")
+    if ix < 0 then break end
+    local texture = GetPlayerBuffTexture(ix)
+    if string.lower(texture) == "interface\\icons\\spell_shadow_mindrot" then
+      local timeRemaining = GetPlayerBuffTimeLeft(ix)
+      if timeRemaining then
+        UIErrorsFrame:Clear()
+        UIErrorsFrame:AddMessage(format("Brainwasher Debuff: %dm %ds", timeRemaining/60,math.mod(timeRemaining,60)),1,0,0)
+      end
+      break -- stop once we've found the desired debuff
+    end
+  end
+end
+
+function mainFrame:GOSSIP_CLOSED()
+  mainFrame:Hide()
+end
+
+function mainFrame:ADDON_LOADED(addon)
+  if addon ~= addon_name then return end
+  BrainSaverDB = BrainSaverDB or {}
+  BrainSaverDB.spec = BrainSaverDB.spec or {}
+end
+
+function mainFrame:GOSSIP_SHOW()
+  if GossipFrameNpcNameText:GetText() ~= "Goblin Brainwashing Device" then return end
+
+  local titleButton;
+  local t1,t2,t3 = TalentCounts()
+  local current_spec = FetchTalents()
+
+  self.talentSummaryText:SetText("Current talents: " .. ColorSpecSummary(t1,t2,t3))
+
+  self.gossip_slots = {
+    save = {},
+    load = {},
+    buy = {},
+    -- reset = nil,
+  }
+
+  for i=1, NUMGOSSIPBUTTONS do
+    titleButton = _G["GossipTitleButton" .. i]
+
+    if titleButton:IsVisible() then
+      local text = titleButton:GetText()
+      local _,_,save_spec = string.find(text,"Save (%d+)(..) Specialization")
+      local _,_,load_spec = string.find(text,"Activate (%d+)(..) Specialization")
+      local _,_,buy_spec = string.find(text,"Buy (%d+)(..) Specialization")
+      local reset = string.find(text,"Reset my talents")
+      save_spec = tonumber(save_spec)
+      load_spec = tonumber(load_spec)
+      buy_spec  = tonumber(buy_spec)
+
+      if save_spec then
+        self.gossip_slots.save[save_spec] = titleButton
+        talentButtons[save_spec].canSave = true
+        talentButtons[save_spec].isActive = true
+
+      elseif load_spec then
+        self.gossip_slots.load[load_spec] = titleButton
+        talentButtons[load_spec].canLoad = true
+        talentButtons[load_spec].isActive = true
+
+      elseif buy_spec then
+        self.gossip_slots.buy[buy_spec] = titleButton
+
+        for i=buy_spec,4 do
+          talentButtons[i].isActive = false
+          talentButtons[i]:SetIcon("Interface\\Icons\\INV_Misc_Coin_01",true)
+          talentButtons[i]:SetName("")
+          talentButtons[i]:SetTalentSummary("Buy Slot")
+        end
+
+      elseif reset then
+        self.gossip_slots.reset = titleButton
+      end
+    end
+  end
+
+  for i=1,4 do
+    local button = talentButtons[i]
+    local spec = BrainSaverDB.spec[i]
+    button.isCurrentSpec = false
+    if button.isActive then
+      if button.canLoad and spec then
+        -- load spec data
+        button:SetIcon(spec.icon)
+        button:SetName(spec.name)
+        button:SetTalentSummary(spec.t1,spec.t2,spec.t3)
+        if spec.talents and IsSameSpec(spec.talents,current_spec) then
+          button.isCurrentSpec = true
+        end
+      elseif button.canSave then -- if save but no load
+        button:SetIcon("Interface\\Icons\\INV_Misc_QuestionMark")
+        button:SetName("Spec "..button.index)
+        button:SetTalentSummary("? | ? | ?")
+      end
+    end
+  end
+
+
+  -- if no gossip options occur we can't use the washer
+  if not self.gossip_slots.reset then
+    self.talentSummaryText:SetText("\n\n\n\nBrainwasher not available on this character.")
+    for _,btn in talentButtons do
+      btn:Hide()
+    end
+    self.resetButton:Hide()
+    self.washerButton:Hide()
+  else -- restore in case washer was just bought
+    for _,btn in talentButtons do
+      btn:Show()
+    end
+    self.resetButton:Show()
+    self.washerButton:Show()
+  end
+
+  GossipFrame:SetAlpha(0) -- 'hide' but don't cause a GOSSIP_CLOSED
+  self:Show()
+end
