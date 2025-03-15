@@ -280,7 +280,6 @@ for row = 1, numRows do
 
         btn:SetIcon("Interface\\Icons\\INV_Misc_QuestionMark")
 
-        -- OnClick handler using 'this' and 'arg1'.
         btn:SetScript("OnClick", function()
           mainFrame.currentButton = this.index
 
@@ -296,7 +295,12 @@ for row = 1, numRows do
               end
             end
           else
-            StaticPopup_Show("BUY_TALENT_SLOT")
+            local price
+            for s,btn in mainFrame.gossip_slots.buy do
+              price = btn.price
+              break
+            end
+            StaticPopup_Show("BUY_TALENT_SLOT", price)
           end
         end)
         btn:SetScript("OnShow", function ()
@@ -354,7 +358,7 @@ end)
 --------------------------------------------------
 
 StaticPopupDialogs["BUY_TALENT_SLOT"] = {
-    text = "Do you want to buy a talent slot for 100 gold?",
+    text = "Do you want to buy a talent slot for %d gold?",
     button1 = "Yes",
     button2 = "No",
     OnShow = function()
@@ -367,7 +371,7 @@ StaticPopupDialogs["BUY_TALENT_SLOT"] = {
       local slot
       for s,btn in mainFrame.gossip_slots.buy do
         -- Send the appropriate gossip option:
-        btn:Click() -- this will close the dialogue for us
+        btn.button:Click() -- this will close the dialogue for us
         break
       end
     end,
@@ -601,7 +605,7 @@ function mainFrame:GOSSIP_SHOW()
       local text = titleButton:GetText()
       local _,_,save_spec = string.find(text,"Save (%d+)(..) Specialization")
       local _,_,load_spec = string.find(text,"Activate (%d+)(..) Specialization")
-      local _,_,buy_spec = string.find(text,"Buy (%d+)(..) Specialization")
+      local _,_,buy_spec,_,price = string.find(text,"Buy (%d+)(..) Specialization tab for (%d+) gold")
       local reset = string.find(text,"Reset my talents")
       save_spec = tonumber(save_spec)
       load_spec = tonumber(load_spec)
@@ -618,7 +622,7 @@ function mainFrame:GOSSIP_SHOW()
         talentButtons[load_spec].isActive = true
 
       elseif buy_spec then
-        self.gossip_slots.buy[buy_spec] = titleButton
+        self.gossip_slots.buy[buy_spec] = { button = titleButton, price = price }
 
         for i=buy_spec,4 do
           talentButtons[i].isActive = false
